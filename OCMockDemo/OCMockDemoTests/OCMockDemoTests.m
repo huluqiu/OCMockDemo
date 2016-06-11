@@ -7,6 +7,9 @@
 //
 
 #import <XCTest/XCTest.h>
+#import <OCMock/OCMock.h>
+#import "MikuHelper.h"
+#import "Miku.h"
 
 @interface OCMockDemoTests : XCTestCase
 
@@ -16,7 +19,6 @@
 
 - (void)setUp {
     [super setUp];
-    // Put setup code here. This method is called before the invocation of each test method in the class.
 }
 
 - (void)tearDown {
@@ -24,16 +26,19 @@
     [super tearDown];
 }
 
-- (void)testExample {
-    // This is an example of a functional test case.
-    // Use XCTAssert and related functions to verify your tests produce the correct results.
-}
-
-- (void)testPerformanceExample {
-    // This is an example of a performance test case.
-    [self measureBlock:^{
-        // Put the code you want to measure the time of here.
-    }];
+- (void)testMikuSing {
+    // given
+    id mikuHelperMock = OCMClassMock([MikuHelper class]);
+    OCMStub([mikuHelperMock shareInstance]).andReturn(mikuHelperMock);
+    OCMStub([mikuHelperMock fetchSongByInternet:([OCMArg invokeBlockWithArgs:@"Tell Your World", nil])]);
+    Miku *miku = [Miku new];
+    miku.helper = mikuHelperMock;
+    id mikuMock = OCMPartialMock(miku);
+    // when
+    [miku sing];
+    // then
+    XCTAssertTrue(miku.singing);
+    OCMVerify([mikuMock dance]);
 }
 
 @end
