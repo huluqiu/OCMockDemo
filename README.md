@@ -27,6 +27,7 @@
 `OCMock`提供了丰富的`Mock`和`Stub`，官方文档很详细，可以查看官方文档，这里我主要通过一些例子来说明怎么使用。
 [OCMock 3 reference](http://ocmock.org/reference/)
 ## 3. 举个栗子
+#### Mock && Stub
 
 	@interface Miku : NSObject
 
@@ -102,7 +103,7 @@
     OCMStub([mikuHelperMock fetchSongByInternet:([OCMArg invokeBlockWithArgs:@"Tell Your World", nil])]);
 **Tips**：记得`block`参数需要用`()`包起来！
 
-#### 交互性测试
+#### Verify
 接下来，设定`Miku`一旦开始唱歌，她便要求助手开始跳舞，哈哈，不要问为什么是助手跳舞，因为`OCMVerify`只能验证`Mock`对象的行为
 
 	- (void)sing {
@@ -121,7 +122,6 @@
 	OCMVerify([mikuHelperMock dance]);
 #### PartialMock
 这时候，有同学就要说了，我们不想看助手跳舞啊，要看`Miku`跳舞！好那就让`Miku`跳，这里就要用到`OCMock`的`PartialMock`。
-//TODO: 解释`PartialMock`
 
 	id partialMock = OCMPartialMock(anObject);
 	/* run code under test */
@@ -140,8 +140,22 @@
     // then
     XCTAssertTrue(miku.singing);
     OCMVerify([mikuMock dance]);
+//TODO: 解释`PartialMock`
+这里可能会有点疑惑，这里是`Miku`在跳舞，但是却去验证`mikuMock`，这样准确吗？
+#### Mock VS ParitialMock
+以下是根据官方文档和源码做的一些理解，如有不对，看看就好，欢迎指正。
 
+普通的`Mock`是根据一个类去创建对应的`mock`对象，是一个纯粹的`mock`对象，也就是说，如果某个方法没有对应的`stub`，那么它将不具备任何意义。
 
+`PartialMock`则是根据一个现有对象去创建`mock`对象，这个`mock`对象会去`hook`原对象的大部分方法（不包括一些消息转发相关方法、以及一些内存管理相关方法等），也就是说，如果某个方法没有`stub`，那么它将会去调用原对象的对应方法，如果有`stub`，那么原对象的对应方法也会被`stub`覆盖。
 
+其实现原理是：`ParitialMock`的时候，不仅会创建一个`mock`对象，同时还会创建一个原对象所属类的子类，并改变原对象的类为这个子类，然后通过`runtime`，对这个子类的方法进行拦截，并做了一系列处理，比如添加验证信息，为`mock`对象添加`hook`这些方法，若有`stub`的话，覆盖对应方法，下面图示可以作为一个参考。
+
+**partialMock**
+![OCMParitialMock1](media/OCMParitialMock1.png)
+**stub**
+![OCMPartialMock3](media/OCMPartialMock3.png)
+所以，验证`mikuMock`有没有跳舞也就是验证`miku`有没有跳舞
+**结论**：利用`PartialMock`可以做到`verify`非`mock`对象的行为。
 
 
