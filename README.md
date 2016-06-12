@@ -140,7 +140,6 @@
     // then
     XCTAssertTrue(miku.singing);
     OCMVerify([mikuMock dance]);
-//TODO: 解释`PartialMock`
 这里可能会有点疑惑，这里是`Miku`在跳舞，但是却去验证`mikuMock`，这样准确吗？
 #### Mock VS ParitialMock
 以下是根据官方文档和源码做的一些理解，如有不对，看看就好，欢迎指正。
@@ -152,9 +151,13 @@
 其实现原理是：`ParitialMock`的时候，不仅会创建一个`mock`对象，同时还会创建一个原对象所属类的子类，并改变原对象的类为这个子类，然后通过`runtime`，对这个子类的方法进行拦截，并做了一系列处理，比如添加验证信息，为`mock`对象添加`hook`这些方法，若有`stub`的话，覆盖对应方法，下面图示可以作为一个参考。
 
 **partialMock**
+
 ![OCMParitialMock1](media/OCMParitialMock1.png)
+
 **stub**
+
 ![OCMPartialMock3](media/OCMPartialMock3.png)
+
 所以，验证`mikuMock`有没有跳舞也就是验证`miku`有没有跳舞
 **结论**：利用`PartialMock`可以做到`verify`非`mock`对象的行为。
 
