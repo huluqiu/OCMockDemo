@@ -1,5 +1,8 @@
+# 日报: 2016-06-12
+这里补上端午前说好的关于`OCMock`的一些心得！
+ps：今天师兄说可以不用写日报了！![@2](http://7xny33.com1.z0.glb.clouddn.com/2016-06-12-@2.gif)
+
 # OCMock
-![](http://7xny33.com1.z0.glb.clouddn.com/2016-06-07-14653147159943.jpg?imageView/2/w/160)
 
 **Mock objects for Objective-C**
 
@@ -37,7 +40,8 @@
 	- (void)sing;
 	
 	@end
-我们有个类叫`Miku`，她会唱歌，唱歌做什么呢，会把自己标记为正在唱歌
+我们有个类叫`Miku`，她会唱歌，唱歌做什么呢，会把自己标记为正在唱歌![@14](http://7xny33.com1.z0.glb.clouddn.com/2016-06-12-@14.jpg)
+
 
 	- (void)sing {
 	    NSString *songName = [[MikuHelper shareInstance] fetchSong];
@@ -47,7 +51,8 @@
 	        self.singing = NO;
 	    }
 	}
-她有个助理，叫`MikuHelper`，它负责给`Miku`提供歌曲。
+她有个助理，叫`MikuHelper`，它负责给`Miku`提供歌曲。![@12](http://7xny33.com1.z0.glb.clouddn.com/2016-06-12-@12.jpg)
+
 
 	@interface MikuHelper : NSObject
 
@@ -84,7 +89,7 @@
 接下来出现这种情况，助手需要联网获取歌曲，然后通过`block`返回歌曲，而不是通过返回值返回
 
 	- (void)fetchSongByInternet:(void (^)(NSString *song))callback;
-`OCMock`提供了一个一个类`OCMArg`，它包含了一套对参数的操作([详见官方文档](http://ocmock.org/reference/#argument-rconstraints))，包括
+`OCMock`提供了一个一个类`OCMArg`，它包含了一套对参数的操作([详见官方文档](http://ocmock.org/reference/#argument-constraints))，包括
 
 	// 对参数的限制
 	OCMStub([mock someMethod:aValue)
@@ -104,7 +109,7 @@
 **Tips**：记得`block`参数需要用`()`包起来！
 
 #### Verify
-接下来，设定`Miku`一旦开始唱歌，她便要求助手开始跳舞，哈哈，不要问为什么是助手跳舞，因为`OCMVerify`只能验证`Mock`对象的行为
+接下来，设定`Miku`一旦开始唱歌，她便要求助手开始跳舞![@14](http://7xny33.com1.z0.glb.clouddn.com/2016-06-12-@14.jpg)，哈哈，不要问为什么是助手跳舞，因为`OCMVerify`只能验证`Mock`对象的行为
 
 	- (void)sing {
 	    [[MikuHelper shareInstance] fetchSongByInternet:^(NSString *song) {
@@ -148,17 +153,20 @@
 
 `PartialMock`则是根据一个现有对象去创建`mock`对象，这个`mock`对象会去`hook`原对象的大部分方法（不包括一些消息转发相关方法、以及一些内存管理相关方法等），也就是说，如果某个方法没有`stub`，那么它将会去调用原对象的对应方法，如果有`stub`，那么原对象的对应方法也会被`stub`覆盖。
 
-其实现原理是：`ParitialMock`的时候，不仅会创建一个`mock`对象，同时还会创建一个原对象所属类的子类，并改变原对象的类为这个子类，然后通过`runtime`，对这个子类的方法进行拦截，并做了一系列处理，比如添加验证信息，为`mock`对象添加`hook`这些方法，若有`stub`的话，覆盖对应方法，下面图示可以作为一个参考。
+其实现原理是：`ParitialMock`的时候，不仅会创建一个`mock`对象，同时还会创建一个原对象所属类的子类，并改变原对象的类为这个子类，然后通过`runtime`，为`mock`对象`hook`这个`subclass`的方法，若有`stub`的话，覆盖对应方法，下面图示可以作为一个参考。
 
 **partialMock**
 
-![OCMParitialMock1](media/OCMParitialMock1.png)
+![OCMParitialMock1](http://7xny33.com1.z0.glb.clouddn.com/2016-06-12-OCMParitialMock1.png)
 
 **stub**
 
-![OCMPartialMock3](media/OCMPartialMock3.png)
+![OCMPartialMock3](http://7xny33.com1.z0.glb.clouddn.com/2016-06-12-OCMPartialMock3.png)
 
-所以，验证`mikuMock`有没有跳舞也就是验证`miku`有没有跳舞
+所以，验证`mikuMock`有没有跳舞也就是验证`miku`有没有跳舞。
+
 **结论**：利用`PartialMock`可以做到`verify`非`mock`对象的行为。
+
+
 
 
