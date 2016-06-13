@@ -1,7 +1,3 @@
-# 日报: 2016-06-12
-这里补上端午前说好的关于`OCMock`的一些心得！
-ps：今天师兄说可以不用写日报了！![@2](http://7xny33.com1.z0.glb.clouddn.com/2016-06-12-@2.gif)
-
 # OCMock
 
 **Mock objects for Objective-C**
